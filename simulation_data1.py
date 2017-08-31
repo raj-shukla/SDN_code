@@ -70,13 +70,13 @@ def SimulationData():
         waitTime.append([])
         powerAvailable.append([])
     #}
-    '''
+    
     for i in range(0, stations) :
     #{
         locationOfStation = i*120/stations
         stationLocation.append(locationOfStation)
     #}
-    '''
+    
     for i in range (0, 50) :
     #{    
         for j in range (0, schedules):

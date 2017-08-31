@@ -3,6 +3,8 @@ from random import randrange
 from random import random
 from csv import reader
 from math import exp
+import copy
+
  
 # Load a CSV file
 def load_csv(filename):
@@ -41,7 +43,7 @@ def dataset_minmax(dataset):
 def normalize_dataset(dataset, minmax):
     for row in dataset:
         for i in range(len(row)):
-            row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
+            row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0]) 
  
 # Split a dataset into k folds
 def cross_validation_split(dataset, n_folds):
@@ -91,6 +93,12 @@ def evaluate_algorithm(dataset, algorithm, n_folds, *args):
         print(actual)
         print(predicted)
         scores.append(accuracy)
+    print("##############################################")
+    predicted = algorithm(train_set, dataset, *args)
+    actual = [row[-1] for row in fold]
+    accuracy = accuracy_metric(actual, predicted)
+    print(actual)
+    print(predicted)
     #print(len(train_set))
     #print(len(test_set))
     return scores
@@ -182,17 +190,19 @@ def predict(network, row):
  
 # Backpropagation Algorithm With Stochastic Gradient Descent
 def back_propagation(train, test, l_rate, n_epoch, n_hidden):
-        print("check1")
         n_inputs = len(train[0]) - 1
         #print(n_inputs)
         #n_outputs = len(set([row[-1] for row in train]))
         n_outputs = 1
         network = initialize_network(n_inputs, n_hidden, n_outputs)
         train_network(network, train, l_rate, n_epoch, n_outputs)
+        finalNetwork = copy.deepcopy(network)
+        #print(network)
+        #print(finalNetwork)
         predictions = list()
         for row in test:
                 prediction = predict(network, row)
-                print(prediction[0])
+                #print(prediction[0])
                 predictions.append(prediction)
         return(predictions)
  
@@ -206,16 +216,21 @@ for i in range(len(dataset[0])):
 # convert class column to integers
 #str_column_to_int(dataset, len(dataset[0])-1)
 # normalize input variables
+actualValue = []
 minmax = dataset_minmax(dataset)
 normalize_dataset(dataset, minmax)
 for row in dataset:
-    print (row[4])
+    actualValue.append(row[5])
+    print (row[5])
 print("#################")
 # evaluate algorithm
+predictions = list()
 n_folds = 5
 l_rate = 0.1
-n_epoch = 100
-n_hidden = 5
+n_epoch = 1000
+n_hidden = 25
+print(actualValue)
 scores = evaluate_algorithm(dataset, back_propagation, n_folds, l_rate, n_epoch, n_hidden)
+
 print('Scores: %s' % scores)
 print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
