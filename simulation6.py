@@ -4,7 +4,7 @@ from operator import itemgetter
 import random
 import statistics
 import copy
-from datetime import datetime
+import time
 import simulation_data
 
 chargingTimeSimulation = []
@@ -454,20 +454,24 @@ def SimulationMinDistance(simulationData) :
 
 #}
 
-meanValues = [[], [], [], [], []]
+runTime = []
+meanValues = [[], [], [], [], [], []]
 
-vehicles = 0
-stations = 20
+vehicles = 200
+stations = 0
 for i in range(0, 10):
 #{
-    vehicles = vehicles + 50
-    variableParameter = vehicles
-    for j in range(0, 100):
+    stations = stations + 5
+    variableParameter = stations
+    for j in range(0, 10):
     #{
+        startTime = time.time()
         simulationData = simulation_data.SimulationData()
         simulationData[0] = vehicles
         simulationData[1] = stations
         Simulation(simulationData)
+        endTime = time.time()
+        runTime.append(endTime - startTime)
         SimulationMinDistance(simulationData) 
     #}
     meanValues[0].append(variableParameter)
@@ -475,19 +479,22 @@ for i in range(0, 10):
     meanValues[2].append(statistics.mean(chargingTimeMinDistance))
     meanValues[3].append(statistics.mean(unallocatedVehiclesSimulation))
     meanValues[4].append(statistics.mean(unallocatedVehiclesMinDistance))
+    meanValues[5].append(statistics.mean(runTime))
     print(chargingTimeSimulation)
     print(chargingTimeMinDistance)
     print(unallocatedVehiclesSimulation)
     print(unallocatedVehiclesMinDistance)
+    print(runTime)
     chargingTimeSimulation.clear()
     chargingTimeMinDistance.clear()
     unallocatedVehiclesSimulation.clear()
     unallocatedVehiclesMinDistance.clear()
+    runTime.clear()
 #}
 
 print(meanValues)
 
-with open("outputVehiclesRandom.csv", "w") as f:
+with open("outputStationsTime.csv", "w") as f:
     writer = csv.writer(f)
     writer.writerows(meanValues)
 
